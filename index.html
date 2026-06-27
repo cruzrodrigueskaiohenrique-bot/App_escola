@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha IA com Python</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="chat-container">
+        <h2>Assistente IA</h2>
+        <div id="chat-box" class="chat-box"></div>
+        
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Digite uma mensagem...">
+            <button onclick="enviarMensagem()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        async function enviarMensagem() {
+            const input = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+            const mensagem = input.value.trim();
+
+            if (!mensagem) return;
+
+            // Mostrar mensagem do usuário no chat
+            chatBox.innerHTML += `<p class="user-msg"><strong>Você:</strong> ${mensagem}</p>`;
+            input.value = '';
+
+            // Enviar para o Python (Back-end)
+            const response = await fetch('/perguntar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mensagem: mensagem })
+            });
+
+            const dados = await response.json();
+
+            // Mostrar resposta da IA no chat
+            chatBox.innerHTML += `<p class="ai-msg"><strong>IA:</strong> ${dados.resposta}</p>`;
+            chatBox.scrollTop = chatBox.scrollHeight; // Rolar para baixo
+        }
+    </script>
+</body>
+</html>
